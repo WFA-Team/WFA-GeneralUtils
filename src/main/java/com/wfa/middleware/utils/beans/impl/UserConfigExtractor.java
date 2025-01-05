@@ -1,15 +1,14 @@
 package com.wfa.middleware.utils.beans.impl;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
+import com.wfa.middleware.utils.beans.api.IFileReader;
 import com.wfa.middleware.utils.beans.api.IUserConfigExtractor;
+import com.wfa.middleware.utils.visitors.api.ILineVisitor;
 
 /**
  * Configuration reader and provider, can read config lines in format
@@ -23,34 +22,37 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 	private Map<String, Object> configs;
 	private static final String delimiter = "=";
 	private static final String DEFAULT_CONFIG = "mkv.jinit";
+	private final IFileReader fileReader;
 	
-	UserConfigExtractor() {
+	UserConfigExtractor(IFileReader fileReader) {
 		configs = new HashMap<String, Object>();
+		this.fileReader = fileReader;
+		doParseConfigFile(DEFAULT_CONFIG, true);
 	}
 	
 	@Override
 	public void parseConfigFile(String configPath) {
-        try (BufferedReader br = new BufferedReader(new FileReader(configPath))) {
-            String line;
-            while ((line = br.readLine()) != null) {
+		doParseConfigFile(configPath, false);
+	}
+	
+	private void doParseConfigFile(String configPath, boolean ignoreErr) {
+		fileReader.readFile(configPath, ignoreErr, new ILineVisitor() {
+			@Override
+			public void visitLine(String line) {
                 String[] kv = Arrays.stream(line.split(delimiter))
                         .map(String::trim)
                         .filter(element -> !element.isEmpty())
                         .toArray(String[]::new);
                 
-                if (kv.length != 2)
-                {
+                if (kv.length != 2 && !ignoreErr) {
                 	System.err.println("Invalid Config line, key value length = " + kv.length);
-                	continue;
+                	return;
                 }
                 
-                configs.put(kv[0], kv[1]);
-            }
-        } catch (IOException e) {
-            System.err.println("Error reading file: " + e.getMessage());
-        }			
+                configs.put(kv[0], kv[1]);				
+			}
+		});		
 	}
-
 
 	@Override
 	public String getStringConfig(String configName) {
@@ -62,18 +64,15 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 		return val.toString();
 	}
 
-
 	@Override
 	public Integer getIntConfig(String configName) {
 		return Integer.parseInt(getStringConfig(configName));
 	}
 
-
 	@Override
 	public Double getDoubleConfig(String configName) {
 		return Double.parseDouble(getStringConfig(configName));
 	}
-
 
 	@Override
 	public Integer getDateConfig(String configName) {
