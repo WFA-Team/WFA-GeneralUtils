@@ -21,6 +21,7 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 
 	private Map<String, Object> configs;
 	private static final String delimiter = "=";
+	private static final char COMMENT_PREFIX = '#';
 	private static final String DEFAULT_CONFIG = "mkv.jinit";
 	private final IFileReader fileReader;
 	
@@ -39,7 +40,11 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 		fileReader.readFile(configPath, ignoreErr, new ILineVisitor() {
 			@Override
 			public void visitLine(String line) {
-                String[] kv = Arrays.stream(line.split(delimiter))
+				
+				if (line.strip().toCharArray()[0] == COMMENT_PREFIX)
+						return; // Don't touch commented line
+                
+				String[] kv = Arrays.stream(line.split(delimiter))
                         .map(String::trim)
                         .filter(element -> !element.isEmpty())
                         .toArray(String[]::new);
