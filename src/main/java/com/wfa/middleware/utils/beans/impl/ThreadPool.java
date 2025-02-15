@@ -123,7 +123,7 @@ public class ThreadPool implements IThreadPool{
 
 	@SuppressWarnings("incomplete-switch")
 	@Override
-	public void start() {
+	public void start() throws IllegalStateException {
 		if (poolState.equals(PlayType.STARTED)) {
 			throw new IllegalStateException("Pool has already been started");
 		}
@@ -144,7 +144,7 @@ public class ThreadPool implements IThreadPool{
 	}
 
 	@Override
-	public void pause() {
+	public void pause() throws IllegalStateException {
 		if (!poolState.equals(PlayType.STARTED)) {
 			throw new IllegalStateException("Cannot pause something that hasn't been started");
 		}
@@ -153,7 +153,7 @@ public class ThreadPool implements IThreadPool{
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws IllegalStateException {
 		if (poolState.equals(PlayType.STOPPED) || poolState.equals(PlayType.NOT_STARTED)) {
 			throw new IllegalStateException("Cannot stop what is already stopped.");
 		}
