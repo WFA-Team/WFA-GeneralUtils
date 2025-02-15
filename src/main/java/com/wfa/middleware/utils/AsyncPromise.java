@@ -7,7 +7,10 @@ import com.wfa.middleware.utils.api.IAsyncCallback;
 import com.wfa.middleware.utils.api.IJoinable;
 
 /**
- * A promise that can be joined with other promises of its type
+ * A promise object representing a promise to notify callback on success/failure
+ * of a task.
+ * 
+ * This promise will have to be concluded via application logic
  * 
  * author -> tortoiseDev
  * @param <T> T is the type of result object
@@ -35,6 +38,10 @@ public class AsyncPromise<T> {
 	
 	public void succeed(T result) {
 		this.result = result;
+		
+		for (IAsyncCallback<T> callback : callbacks) {
+			callback.onSuccess(result);
+		}
 	}
 	
 	public T getResult() {
@@ -43,6 +50,9 @@ public class AsyncPromise<T> {
 	
 	public void fail(T result) {
 		this.result = result;
+		for (IAsyncCallback<T> callback : callbacks) {
+			callback.onFailure(result);
+		}		
 	}
 	
 	public void appendCallback(IAsyncCallback<T> callback) {

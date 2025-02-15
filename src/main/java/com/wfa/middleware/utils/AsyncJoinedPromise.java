@@ -7,6 +7,14 @@ import com.wfa.middleware.utils.api.IAsyncCallback;
 import com.wfa.middleware.utils.api.IJoinable;
 import com.wfa.middleware.utils.api.IJoined;
 
+/**
+ * This is resultant promise when you join 2 joinable promises having joinable results.
+ * It will have 2 child promises out of which if both succeed then this promise will automatically succeed
+ * And even if one of them fails, this one will fail too.
+ * 
+ * @author tortoiseDev
+ * @param <T>
+ */
 public class AsyncJoinedPromise<T extends IJoinable<T>> extends AsyncPromise<T> 
 				implements IJoined<AsyncPromise<T>> {
 
@@ -41,7 +49,7 @@ public class AsyncJoinedPromise<T extends IJoinable<T>> extends AsyncPromise<T>
 	}
 	
 	private void checkAndNotifySuccess(T result) {
-		if (firstChildPromise.get().hasSucceeded() && secondChildPromise.get().succeeded) {
+		if (firstChildPromise.get().hasSucceeded() && secondChildPromise.get().hasSucceeded()) {
 			isDone = true;
 			IJoined<T> joinedResult = firstChildPromise.get().getResult().joinTo(secondChildPromise.get().getResult());
 			succeed(joinedResult.get());
