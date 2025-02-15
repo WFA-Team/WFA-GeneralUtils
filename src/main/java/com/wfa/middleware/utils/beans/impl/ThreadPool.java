@@ -135,6 +135,7 @@ public class ThreadPool implements IThreadPool{
 		case PlayType.NOT_STARTED:
 			prepareWorkerThreads();
 			initializeMasterThread();
+			assert((workerThreads.size() + 1) == maxParallelism);
 			break;
 		case PlayType.PAUSED:
 			awakenThreadOnRunnable(masterThreadRunnable);
@@ -174,8 +175,8 @@ public class ThreadPool implements IThreadPool{
 		return count;
 	}
 	
-	private void prepareWorkerThreads() {
-		for (int i = 0; i < maxParallelism; i ++) {
+	private void prepareWorkerThreads() {	
+		for (int i = 0; i < maxParallelism - 1 /*Reserve one entry for master thread*/; i ++) {
 			Runnable workerThreadRunnable =  new Runnable() {
 				@SuppressWarnings("incomplete-switch")
 				@Override
