@@ -20,10 +20,10 @@ import com.wfa.middleware.utils.beans.api.IThreadPool;
  * author -> tortoiseDev
  */
 @Component
-public class ThreadPool implements IThreadPool{
+public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 	private static final int DEFAULT_PARALLELISM = 32;
 	private int maxParallelism;
-	private Queue<Runnable> queue;
+	private Queue<T> queue;
 	private volatile PlayType poolState;
 	private Map<Thread, Runnable> workerThreads;
 	private Thread masterThread; // queue polling thread
@@ -104,7 +104,7 @@ public class ThreadPool implements IThreadPool{
 	}
 	
 	@Override
-	public void submitRunnableQueue(Queue<Runnable> runnableQueue) throws IllegalStateException {
+	public void submitRunnableQueue(Queue<T> runnableQueue) throws IllegalStateException {
 		if (poolState.equals(PlayType.STARTED)) {
 			throw new IllegalStateException("Not allowed to change queue if pool started");
 		}
@@ -210,7 +210,7 @@ public class ThreadPool implements IThreadPool{
 	}
 
 	@Override
-	public Queue<Runnable> getRunnableQueue() {
+	public Queue<T> getRunnableQueue() {
 		return queue;
 	}
 }

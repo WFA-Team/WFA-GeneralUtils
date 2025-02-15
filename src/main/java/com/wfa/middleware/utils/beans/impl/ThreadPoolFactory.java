@@ -8,16 +8,16 @@ import com.wfa.middleware.utils.beans.api.IThreadPool;
 import com.wfa.middleware.utils.beans.api.IThreadPoolFactory;
 
 @Component
-public class ThreadPoolFactory implements IThreadPoolFactory{
-	private ObjectProvider<IThreadPool> threadPoolProvider;
+public class ThreadPoolFactory<T extends Runnable> implements IThreadPoolFactory<T> {
+	private ObjectProvider<IThreadPool<T>> threadPoolProvider;
 	
 	@Autowired
-	public ThreadPoolFactory(ObjectProvider<IThreadPool> threadPoolProvider) {
+	public ThreadPoolFactory(ObjectProvider<IThreadPool<T>> threadPoolProvider) {
 		this.threadPoolProvider = threadPoolProvider;
 	}
 	 
 	@Override
-	public IThreadPool getNewThreadPool() {
+	public IThreadPool<T> getNewThreadPool() {
 		return threadPoolProvider.getObject(); // creates new instance every time
 	}
 }
