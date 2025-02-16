@@ -12,7 +12,7 @@ import com.wfa.middleware.utils.api.IJoinedJoinable;
  * author -> tortoiseDev
  */
 public class JoinVoid extends Void implements IJoinedJoinable<JoinVoid>{
-	private static JoinVoid JoinVoidInstance = new JoinVoid();
+	public static JoinVoid JoinVoidInstance = new JoinVoid();
 	
 	@Override
 	public List<JoinVoid> getJoinedElements() {

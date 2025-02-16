@@ -22,7 +22,7 @@ public class AsyncJoinedJoinablePromise<T extends IJoinedJoinable<T>> extends As
 		return getNewJoinedJoinablePromise(this, joinTo);
 	}
 	
-	public static <T extends IJoinedJoinable<T>> AsyncJoinedJoinablePromise<T> getNewJoinedJoinablePromise(IJoinable<AsyncPromise<T>> firstChildPromise,
+	public static <T extends IJoinedJoinable<T>> IJoinedJoinable<AsyncPromise<T>> getNewJoinedJoinablePromise(IJoinable<AsyncPromise<T>> firstChildPromise,
 			IJoinable<AsyncPromise<T>> secondChildPromise) {
 		return new AsyncJoinedJoinablePromise<T>(firstChildPromise, secondChildPromise);
 	}

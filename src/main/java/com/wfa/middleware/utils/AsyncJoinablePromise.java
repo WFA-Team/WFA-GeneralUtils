@@ -31,7 +31,7 @@ public class AsyncJoinablePromise<T extends IJoinable<T>> extends AsyncPromise<T
 		return this;
 	}
 	
-	public static <T extends IJoinable<T>> AsyncJoinablePromise<T> getNewJoinablePromise() {
+	public static <T extends IJoinable<T>> IJoinable<AsyncPromise<T>> getNewJoinablePromise() {
 		return new AsyncJoinablePromise<T>();
 	}
 }

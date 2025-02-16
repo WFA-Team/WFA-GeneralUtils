@@ -18,13 +18,14 @@ import com.wfa.middleware.utils.api.IAsyncCallback;
 public class AsyncPromise<T> {
 	
 	protected List<IAsyncCallback<T>> callbacks;
-	protected boolean succeeded;
-	protected boolean isDone;
+	protected volatile boolean succeeded;
+	protected volatile boolean isDone;
 	protected T result;
 	
 	protected AsyncPromise() {
 		callbacks = new ArrayList<IAsyncCallback<T>> ();
 		succeeded = false;
+		isDone = false;
 	}
 	
 	public boolean hasSucceeded () {
@@ -36,10 +37,15 @@ public class AsyncPromise<T> {
 	}
 	
 	public void succeed(T result) {
-		this.result = result;
-		
-		for (IAsyncCallback<T> callback : callbacks) {
-			callback.onSuccess(result);
+		if (!isDone()) {
+			this.result = result;
+			this.succeeded = true;
+			for (IAsyncCallback<T> callback : callbacks) {
+				callback.onSuccess(result);
+			}
+			
+			this.succeeded= true; 
+			this.isDone = true;
 		}
 	}
 	
@@ -48,14 +54,25 @@ public class AsyncPromise<T> {
 	}
 	
 	public void fail(T result) {
-		this.result = result;
-		for (IAsyncCallback<T> callback : callbacks) {
-			callback.onFailure(result);
-		}		
+		if (!isDone) {
+			this.result = result;
+			for (IAsyncCallback<T> callback : callbacks) {
+				callback.onFailure(result);
+			}
+			
+			this.isDone = true;
+		}
 	}
 	
 	public void appendCallback(IAsyncCallback<T> callback) {
 		callbacks.add(callback);
+		if (this.isDone()) {
+			if (this.hasSucceeded()) {
+				callback.onSuccess(this.result);
+			} else {
+				callback.onFailure(this.result);
+			}
+		}
 	}
 		
 	public static <T> AsyncPromise<T> getNewPromise() {

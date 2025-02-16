@@ -56,7 +56,7 @@ public class AsyncJoinedPromise<T extends IJoinable<T>> extends AsyncPromise<T>
 		}
 	}
 	
-	public static <T extends IJoinable<T>> AsyncJoinedPromise<T> getNewJoinedPromise(IJoinable<AsyncPromise<T>> firstPromise,
+	public static <T extends IJoinable<T>> IJoined<AsyncPromise<T>> getNewJoinedPromise(IJoinable<AsyncPromise<T>> firstPromise,
 			IJoinable<AsyncPromise<T>> secondPromise) {
 		return new AsyncJoinedPromise<T>(firstPromise, secondPromise);
 	}
