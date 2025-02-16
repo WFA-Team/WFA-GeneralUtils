@@ -50,12 +50,12 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 								workerThread = getIdleWorkerThread();
 							}
 							
-							awakenThreadOnRunnable(workerThreads.get(workerThread));
+							awakenWhicheverThreadOnRunnable(workerThreads.get(workerThread));
 						}
 						break;
 						
 					case PlayType.PAUSED:
-						pauseThreadsOnRunnable(this);
+						pauseCurrentThreadOnRunnable(this);
 						break;
 						
 					case PlayType.STOPPED:
@@ -79,13 +79,13 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 		return null;
 	}
 		
-	private static void awakenThreadOnRunnable(Runnable runnable) {
+	private static void awakenWhicheverThreadOnRunnable(Runnable runnable) {
 		synchronized(runnable) {
 			runnable.notify();
 		}
 	}
 	
-	private static void pauseThreadsOnRunnable(Runnable runnable) {
+	private static void pauseCurrentThreadOnRunnable(Runnable runnable) {
 		synchronized(runnable) {
 			try {
 				runnable.wait();
@@ -138,7 +138,7 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 			assert((workerThreads.size() + 1) == maxParallelism);
 			break;
 		case PlayType.PAUSED:
-			awakenThreadOnRunnable(masterThreadRunnable);
+			awakenWhicheverThreadOnRunnable(masterThreadRunnable);
 			break;
 		}
 	}
@@ -189,11 +189,11 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 							if (runnable != null) {
 								runnable.run();
 							} else {
-								pauseThreadsOnRunnable(this);
+								pauseCurrentThreadOnRunnable(this);
 							}
 							break;
 						case PlayType.PAUSED:
-							pauseThreadsOnRunnable(this);
+							pauseCurrentThreadOnRunnable(this);
 							break;
 						case PlayType.STOPPED:
 							terminate = true;
