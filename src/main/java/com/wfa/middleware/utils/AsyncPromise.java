@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.wfa.middleware.utils.api.IAsyncCallback;
-import com.wfa.middleware.utils.api.IJoinable;
 
 /**
  * A promise object representing a promise to notify callback on success/failure
@@ -59,7 +58,7 @@ public class AsyncPromise<T> {
 		callbacks.add(callback);
 	}
 		
-	public static <T extends IJoinable<T>> AsyncPromise<T> getNewPromise() {
+	public static <T> AsyncPromise<T> getNewPromise() {
 		return new AsyncPromise<T>();
 	}
 }
