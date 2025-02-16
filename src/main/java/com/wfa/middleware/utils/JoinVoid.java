@@ -11,7 +11,7 @@ import com.wfa.middleware.utils.api.IJoinedJoinable;
 /* Void result type but compatible with join framework
  * author -> tortoiseDev
  */
-public class JoinVoid implements IJoinedJoinable<JoinVoid>{
+public class JoinVoid extends Void implements IJoinedJoinable<JoinVoid>{
 	private static JoinVoid JoinVoidInstance = new JoinVoid();
 	
 	@Override
