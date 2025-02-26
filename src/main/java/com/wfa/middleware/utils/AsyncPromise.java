@@ -20,12 +20,14 @@ public class AsyncPromise<T> {
 	protected List<IAsyncCallback<T>> callbacks;
 	protected volatile boolean succeeded;
 	protected volatile boolean isDone;
+	protected volatile boolean isConcluded;
 	protected T result;
 	
 	protected AsyncPromise() {
 		callbacks = new ArrayList<IAsyncCallback<T>> ();
 		succeeded = false;
 		isDone = false;
+		isConcluded = false;
 	}
 	
 	public boolean hasSucceeded () {
@@ -36,15 +38,19 @@ public class AsyncPromise<T> {
 		return isDone;
 	}
 	
+	public boolean isConcluded() {
+		return isConcluded;
+	}
+	
 	public void succeed(T result) {
 		if (!isDone()) {
 			this.result = result;
 			this.succeeded = true;
+			this.isConcluded = true;
 			for (IAsyncCallback<T> callback : callbacks) {
 				callback.onSuccess(result);
 			}
 			
-			this.succeeded= true; 
 			this.isDone = true;
 		}
 	}
@@ -56,6 +62,7 @@ public class AsyncPromise<T> {
 	public void fail(T result) {
 		if (!isDone) {
 			this.result = result;
+			this.isConcluded = true;
 			for (IAsyncCallback<T> callback : callbacks) {
 				callback.onFailure(result);
 			}
