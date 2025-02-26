@@ -159,6 +159,12 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 		}
 
 		poolState = PlayType.STOPPED;
+
+		// Awaken worker threads so that they terminate
+		for (Runnable runnable : workerThreads.values()) {
+			awakenWhicheverThreadOnRunnable(runnable);
+		}
+		
 		workerThreads.clear();
 		masterThread = null;
 	}
