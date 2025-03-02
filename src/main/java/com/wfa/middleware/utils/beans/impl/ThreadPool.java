@@ -128,9 +128,10 @@ public class ThreadPool<T extends Runnable> implements IThreadPool<T>{
 			throw new IllegalStateException("Pool has already been started");
 		}
 		
+		PlayType oldState = poolState;
 		poolState = PlayType.STARTED; // first change state for threads
 		
-		switch(poolState) {
+		switch(oldState) {
 		case PlayType.STOPPED:
 		case PlayType.NOT_STARTED:
 			prepareWorkerThreads();

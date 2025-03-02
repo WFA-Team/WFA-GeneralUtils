@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.wfa.middleware.utils.beans.api.IFileReader;
@@ -25,6 +26,7 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 	private static final String DEFAULT_CONFIG = "mkv.jinit";
 	private final IFileReader fileReader;
 	
+	@Autowired
 	UserConfigExtractor(IFileReader fileReader) {
 		configs = new HashMap<String, Object>();
 		this.fileReader = fileReader;
@@ -41,20 +43,24 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 			@Override
 			public void visitLine(String line) {
 				
-				if (line.strip().toCharArray()[0] == COMMENT_PREFIX)
+				if (line.isBlank() ||  line.strip().toCharArray()[0] == COMMENT_PREFIX)
 						return; // Don't touch commented line
                 
-				String[] kv = Arrays.stream(line.split(delimiter))
-                        .map(String::trim)
-                        .filter(element -> !element.isEmpty())
-                        .toArray(String[]::new);
-                
-                if (kv.length != 2 && !ignoreErr) {
-                	System.err.println("Invalid Config line, key value length = " + kv.length);
-                	return;
-                }
-                
-                configs.put(kv[0], kv[1]);				
+				try {
+					String[] kv = Arrays.stream(line.split(delimiter))
+	                        .map(String::trim)
+	                        .filter(element -> !element.isEmpty())
+	                        .toArray(String[]::new);
+	                
+					if (kv.length != 2 && !ignoreErr) {
+	                	System.err.println("Invalid Config line, key value length = " + kv.length);
+	                	return;
+	                }
+	                
+	                configs.put(kv[0], kv[1]);						
+				} catch(Exception e) {
+					System.err.println("Error Parsing config file, " + e.getStackTrace().toString());
+				}			
 			}
 		});		
 	}
@@ -81,8 +87,6 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 
 	@Override
 	public Integer getDateConfig(String configName) {
-		
-		// TODO Implement Separate Date DataType
 		return getIntConfig(configName);
 	}
 	
