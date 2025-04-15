@@ -50,7 +50,6 @@ public class AsyncJoinedPromise<T extends IJoinable<T>> extends AsyncPromise<T>
 	
 	private void checkAndNotifySuccess(T result) {
 		if (firstChildPromise.get().hasSucceeded() && secondChildPromise.get().hasSucceeded()) {
-			isDone = true;
 			IJoined<T> joinedResult = firstChildPromise.get().getResult().joinTo(secondChildPromise.get().getResult());
 			succeed(joinedResult.get());
 		}
