@@ -23,7 +23,8 @@ public class FileReaderBean implements IFileReader {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             String line;
             while ((line = br.readLine()) != null) {
-            	visitor.visitLine(line);
+            	if (!visitor.visitLine(line))
+            		break;
             }
         } catch (IOException e) {
         	if (!ignoreErr)

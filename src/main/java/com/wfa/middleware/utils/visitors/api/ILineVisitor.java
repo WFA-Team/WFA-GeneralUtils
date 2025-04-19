@@ -7,5 +7,5 @@ package com.wfa.middleware.utils.visitors.api;
  * @author -> tortoiseDev
  */
 public interface ILineVisitor {
-	void visitLine(String line);
+	boolean visitLine(String line);
 }

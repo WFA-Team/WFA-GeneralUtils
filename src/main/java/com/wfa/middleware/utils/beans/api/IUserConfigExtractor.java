@@ -12,4 +12,6 @@ public interface IUserConfigExtractor {
 	Integer getIntConfig(String configName);
 	Double getDoubleConfig(String configName);
 	Integer getDateConfig(String configName);
+	
+	boolean isConfigSet(String configName);
 }

@@ -41,10 +41,10 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 	private void doParseConfigFile(String configPath, boolean ignoreErr) {
 		fileReader.readFile(configPath, ignoreErr, new ILineVisitor() {
 			@Override
-			public void visitLine(String line) {
+			public boolean visitLine(String line) {
 				
 				if (line.isBlank() ||  line.strip().toCharArray()[0] == COMMENT_PREFIX)
-						return; // Don't touch commented line
+						return true; // Don't touch commented line
                 
 				try {
 					String[] kv = Arrays.stream(line.split(delimiter))
@@ -54,13 +54,14 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 	                
 					if (kv.length != 2 && !ignoreErr) {
 	                	System.err.println("Invalid Config line, key value length = " + kv.length);
-	                	return;
+	                	return true;
 	                }
 	                
 	                configs.put(kv[0], kv[1]);						
 				} catch(Exception e) {
 					System.err.println("Error Parsing config file, " + e.getStackTrace().toString());
-				}			
+				}
+				return true;
 			}
 		});		
 	}
@@ -102,5 +103,10 @@ public class UserConfigExtractor implements IUserConfigExtractor {
 	@Override
 	public void parseConfigFile() {
 		parseConfigFile(DEFAULT_CONFIG);	
+	}
+
+	@Override
+	public boolean isConfigSet(String configName) {
+		return getStringConfig(configName) != null;
 	}
 }
